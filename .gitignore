@@ -6,3 +6,8 @@
 
 # Build files
 /dist
+
+# Salesforce Project (used for building flows for testing)
+.sf/
+.sfdx/
+/tests/salesforce-project/coverage
