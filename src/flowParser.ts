@@ -175,6 +175,7 @@ function getMermaidBody(flowMap :FlowMap): Promise<string> {
                 case 'actionCalls':
                 case 'assignments':
                 case 'recordCreates':
+                case 'recordLookups':
                 case 'recordUpdates':
                 case 'screens':
                     bodyStr += node.name + " --> " + nextNode + "\n";
@@ -213,11 +214,14 @@ function getNodeDefStr(flowMap: FlowMap): Promise<string> {
             let icon = ((<any>NODE_CONFIG)[type]) ? (<any>NODE_CONFIG)[type].mermaidIcon : null;
             switch (type) {
                 case 'actionCalls':
-                    icon = (<any>NODE_CONFIG)[type].mermaidIcon[flowMap[property].actionType];
+                    icon = ((<any>NODE_CONFIG)[type].mermaidIcon[flowMap[property].actionType]) ?
+                    (<any>NODE_CONFIG)[type].mermaidIcon[flowMap[property].actionType] : 
+                    (<any>NODE_CONFIG)[type].mermaidIcon.submit;
                 case 'assignments':
                 case 'decisions':
                 case 'loops':
                 case 'recordCreates':
+                case 'recordLookups':
                 case 'recordUpdates':
                 case 'screens':
                 nodeDefStr += property + (<any>NODE_CONFIG)[type].mermaidOpen + icon + "\n" + flowMap[property].label + (<any>NODE_CONFIG)[type].mermaidClose + ":::" + type + "\n"

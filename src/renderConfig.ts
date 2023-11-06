@@ -9,6 +9,7 @@ export const NODE_CONFIG = {
 		icon: "<&pulse>",
 		mermaidIcon: {
 			"apex": ">_",
+			"emailAlert" : "✉",
 			"emailSimple": "✉",
 			"submit": "⚡"
 
@@ -46,6 +47,15 @@ export const NODE_CONFIG = {
 		label: "Create Records",
 		icon: "<&medical-cross>",
 		mermaidIcon: "+" ,
+		mermaidClose: ")",
+		mermaidOpen: "("
+	},
+	'recordLookups': {
+		background: "#F9548A",
+		color: "white",
+		label: "Create Records",
+		icon: "<&medical-cross>",
+		mermaidIcon: "🔍" ,
 		mermaidClose: ")",
 		mermaidOpen: "("
 	},
