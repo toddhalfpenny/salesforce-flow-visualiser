@@ -24,8 +24,12 @@ interface FlowObj {
     "description"? : string;
     "label"? : string;
     "processType"? : string; // TODO
-    "start"? : any;
+    "start"? : {
+        "connector" : string;
+        "scheduledPaths": any;
+    };
     "status"? : "Active" | "Draft";
+    "subflows"? : any | any[];
     "actionCalls"? : any | any[];
     "assignments"? : any | any[];
     "decisions"?: any | any[];
@@ -42,6 +46,7 @@ export function parseFlow(xml:string, renderAs: "plantuml" | "mermaid" = "mermai
             const parser = new XMLParser();
             const flowObj = parser.parse(xml).Flow;
             const flowMap = await createFlowMap(flowObj);
+            // console.log("flowMap", flowMap);
             if (Object.keys(flowMap).length === 0) {
                 reject("no-renderable-content-found");
             }
@@ -89,6 +94,7 @@ function createFlowMap(flowObj: any) :Promise<FlowMap>  {
 				flowMap[property] = flowObj[property];
 				flowMap[property].type = property;
 				flowMap[property].nextNode = flowObj[property].connector.targetReference;
+                flowMap[property].scheduledPaths = (!flowMap[property].scheduledPaths) ? [] : (flowMap[property].scheduledPaths.length) ? flowMap[property].scheduledPaths : [flowMap[property].scheduledPaths];
 				break;
 			default :
 				// If only one entry (e.g one loop) then it will be an object, not an Array, so make it an Array of one
@@ -132,6 +138,7 @@ function createFlowMap(flowObj: any) :Promise<FlowMap>  {
 								nextValueConnector : (el.nextValueConnector) ?
 									el.nextValueConnector.targetReference : null,
 								rules: el.rules2,
+                                elementSubtype: el.elementSubtype,
 								actionType: el.actionType
 							}
 							flowMap[el.name] = mappedEl;
@@ -174,6 +181,7 @@ function getMermaidBody(flowMap :FlowMap): Promise<string> {
             switch (type) {
                 case 'actionCalls':
                 case 'assignments':
+                case 'collectionProcessors':
                 case 'recordCreates':
                 case 'recordLookups':
                 case 'recordUpdates':
@@ -181,10 +189,15 @@ function getMermaidBody(flowMap :FlowMap): Promise<string> {
                     bodyStr += node.name + " --> " + nextNode + "\n";
                     break;
                 case 'start':
-                    bodyStr += "START(( START )) --> " + nextNode  + "\n";
+                    const defaultPathLabel = (node.scheduledPaths.length > 0) ? "|Run Immediately|" : "";
+                    bodyStr += "START(( START )) --> " + defaultPathLabel + nextNode  + "\n";
+                    // scheduled paths
+                    for (const path of node.scheduledPaths ) {
+                        bodyStr += "START(( START )) --> |" + path.label + "| " + path.connector.targetReference + "\n";
+                    }
                     break;
                 case 'decisions':
-                    //rules
+                    // rules
                     for (const rule of node.rules ) {
                         bodyStr += node.name + " --> |" + rule.label + "| " + rule.nextNode.targetReference + "\n";
                     }
@@ -196,6 +209,9 @@ function getMermaidBody(flowMap :FlowMap): Promise<string> {
                     let loopNextNode = node.nextValueConnector;
                     bodyStr += node.name + " --> " + loopNextNode + "\n";
                     bodyStr += node.name + " ---> " + node.nextNode + "\n";
+                    break;
+                case 'subflows':
+                    bodyStr += node.name + " --> " + nextNode + "\n";
                     break;
                 default:
                     // do nothing
@@ -211,12 +227,21 @@ function getNodeDefStr(flowMap: FlowMap): Promise<string> {
         let nodeDefStr = "\START(( START ))\n";
         for (const property in flowMap) {
             const type = flowMap[property].type;
-            let icon = ((<any>NODE_CONFIG)[type]) ? (<any>NODE_CONFIG)[type].mermaidIcon : null;
+            let label:string = ((<any>NODE_CONFIG)[type]) ? (<any>NODE_CONFIG)[type].label :  "";
+            let icon:string = ((<any>NODE_CONFIG)[type]) ? (<any>NODE_CONFIG)[type].mermaidIcon : null;
             switch (type) {
                 case 'actionCalls':
                     icon = ((<any>NODE_CONFIG)[type].mermaidIcon[flowMap[property].actionType]) ?
                     (<any>NODE_CONFIG)[type].mermaidIcon[flowMap[property].actionType] : 
                     (<any>NODE_CONFIG)[type].mermaidIcon.submit;
+                case 'collectionProcessors':
+                    icon = ((<any>NODE_CONFIG)[type].mermaidIcon[flowMap[property].elementSubtype]) ?
+                    (<any>NODE_CONFIG)[type].mermaidIcon[flowMap[property].elementSubtype] : 
+                    (<any>NODE_CONFIG)[type].mermaidIcon.submit;
+
+                    label = ((<any>NODE_CONFIG)[type].label[flowMap[property].elementSubtype]) ?
+                    (<any>NODE_CONFIG)[type].label[flowMap[property].elementSubtype] : 
+                    (<any>NODE_CONFIG)[type].label;
                 case 'assignments':
                 case 'decisions':
                 case 'loops':
@@ -224,7 +249,8 @@ function getNodeDefStr(flowMap: FlowMap): Promise<string> {
                 case 'recordLookups':
                 case 'recordUpdates':
                 case 'screens':
-                nodeDefStr += property + (<any>NODE_CONFIG)[type].mermaidOpen + icon + "\n" + flowMap[property].label + (<any>NODE_CONFIG)[type].mermaidClose + ":::" + type + "\n"
+                case 'subflows':
+                nodeDefStr += property + (<any>NODE_CONFIG)[type].mermaidOpen + icon + " <em>" + label +"</em>\n" + flowMap[property].label + (<any>NODE_CONFIG)[type].mermaidClose + ":::" + type + "\n"
                     break;
                 default:
                     // do nothing
@@ -236,10 +262,10 @@ function getNodeDefStr(flowMap: FlowMap): Promise<string> {
 }
 
 function getVariablesMd(vars :any[]): string {
-	let vStr = "## Variables\n|Name|Datatype|Collection|Input|Output|\n|-|-|-|-|-|\n";
+	let vStr = "## Variables\n|Name|Datatype|Collection|Input|Output|objectType|\n|-|-|-|-|-|-|\n";
 	if (!vars) vars = [];
 	for (const v of vars) {
-		vStr += "|" + v.name + "|" + v.dataType + "|" + v.isCollection + "|" + v.isInput + "|" + v.isOutput + "|\n";
+		vStr += "|" + v.name + "|" + v.dataType + "|" + v.isCollection + "|" + v.isInput + "|" + v.isOutput + "|" + ((v.objectType) ? v.objectType : "") + "\n";
 	}
 	return vStr;
 }

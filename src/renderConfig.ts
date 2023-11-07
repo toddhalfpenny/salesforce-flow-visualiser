@@ -26,6 +26,22 @@ export const NODE_CONFIG = {
 		mermaidClose: ")",
 		mermaidOpen: "("
 	},
+	'collectionProcessors': {
+		background: "#DD7A00",
+		color: "white",
+		label: {
+			"FilterCollectionProcessor": "Collection Filter",
+			"SortCollectionProcessor": "Collection Sort",
+		},
+		icon: "<&pulse>",
+		mermaidIcon: {
+			"FilterCollectionProcessor": "⑂",
+			"SortCollectionProcessor" : "⇅",
+
+		},
+		mermaidClose: ")",
+		mermaidOpen: "("
+	},
 	'decisions': {
 		background: "#DD7A00",
 		color: "white",
@@ -37,6 +53,7 @@ export const NODE_CONFIG = {
 	},
 	'loops': {
 		background: "#E07D1C",
+		label: "Loop",
 		mermaidIcon: "↻",
 		mermaidClose: ")",
 		mermaidOpen: "("
@@ -53,7 +70,7 @@ export const NODE_CONFIG = {
 	'recordLookups': {
 		background: "#F9548A",
 		color: "white",
-		label: "Create Records",
+		label: "Get Records",
 		icon: "<&medical-cross>",
 		mermaidIcon: "🔍" ,
 		mermaidClose: ")",
@@ -74,6 +91,15 @@ export const NODE_CONFIG = {
 		label: "Screen",
 		icon: "<&pencil>",
 		mermaidIcon: "💻" ,
+		mermaidClose: ")",
+		mermaidOpen: "("
+	},
+	'subflows': {
+		background: "#032D60",
+		color: "white",
+		label: "Subflow",
+		icon: "<&pencil>",
+		mermaidIcon: "⎘" ,
 		mermaidClose: ")",
 		mermaidOpen: "("
 	},

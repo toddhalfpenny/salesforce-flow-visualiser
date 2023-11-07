@@ -22,6 +22,8 @@ const mermaidStr = await parseFlow(<YourXMLStr>, 'mermaid', {outputAsMarkdown :t
 * [Mermaid](https://mermaid.js.org/) 
 * [PlantUML](https://plantuml.com/)
 
+## Known Issues
+* Custom Errors cause issues. This is due to the meta being missing from the flow-meta.xml files. This has been raised with Salesforce.
 
 ## Roadmap / To do
 * Tests... yeah of course

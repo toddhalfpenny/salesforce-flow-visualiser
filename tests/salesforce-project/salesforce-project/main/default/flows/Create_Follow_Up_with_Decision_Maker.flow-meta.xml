@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>59.0</apiVersion>
+    <collectionProcessors>
+        <name>Filter</name>
+        <elementSubtype>FilterCollectionProcessor</elementSubtype>
+        <label>Filter</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <assignNextValueToReference>currentItem_Filter</assignNextValueToReference>
+        <collectionProcessorType>FilterCollectionProcessor</collectionProcessorType>
+        <collectionReference>ContactRoles</collectionReference>
+        <conditionLogic>and</conditionLogic>
+        <conditions>
+            <leftValueReference>currentItem_Filter.Role</leftValueReference>
+            <operator>EqualTo</operator>
+            <rightValue>
+                <stringValue>Decision Maker</stringValue>
+            </rightValue>
+        </conditions>
+        <connector>
+            <targetReference>Create_Task</targetReference>
+        </connector>
+    </collectionProcessors>
+    <collectionProcessors>
+        <name>Sort_Contact_Roles</name>
+        <elementSubtype>SortCollectionProcessor</elementSubtype>
+        <label>Sort Contact Roles</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <collectionProcessorType>SortCollectionProcessor</collectionProcessorType>
+        <collectionReference>ContactRoles</collectionReference>
+        <connector>
+            <targetReference>Filter</targetReference>
+        </connector>
+        <sortOptions>
+            <doesPutEmptyStringAndNullFirst>false</doesPutEmptyStringAndNullFirst>
+            <sortField>LastModifiedDate</sortField>
+            <sortOrder>Asc</sortOrder>
+        </sortOptions>
+    </collectionProcessors>
     <environments>Default</environments>
     <interviewLabel>Create Follow-Up with Decision Maker {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Create Follow-Up with Decision Maker</label>
@@ -27,7 +65,7 @@
         <name>Create_Task</name>
         <label>Create Task</label>
         <locationX>176</locationX>
-        <locationY>431</locationY>
+        <locationY>647</locationY>
         <inputAssignments>
             <field>OwnerId</field>
             <value>
@@ -61,7 +99,7 @@
         <inputAssignments>
             <field>WhoId</field>
             <value>
-                <elementReference>Get_Decision_Maker.ContactId</elementReference>
+                <elementReference>currentItem_Filter.Id</elementReference>
             </value>
         </inputAssignments>
         <object>Task</object>
@@ -74,7 +112,7 @@
         <locationY>323</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Create_Task</targetReference>
+            <targetReference>Sort_Contact_Roles</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -84,18 +122,12 @@
                 <elementReference>$Record.Id</elementReference>
             </value>
         </filters>
-        <filters>
-            <field>Role</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Decision Maker</stringValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>OpportunityContactRole</object>
+        <outputReference>ContactRoles</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Role</queriedFields>
         <sortField>CreatedDate</sortField>
         <sortOrder>Desc</sortOrder>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <start>
         <locationX>50</locationX>
@@ -124,4 +156,20 @@
         <triggerType>RecordAfterSave</triggerType>
     </start>
     <status>Draft</status>
+    <variables>
+        <name>ContactRoles</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>OpportunityContactRole</objectType>
+    </variables>
+    <variables>
+        <name>currentItem_Filter</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>OpportunityContactRole</objectType>
+    </variables>
 </Flow>
