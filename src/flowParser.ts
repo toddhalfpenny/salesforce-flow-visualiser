@@ -182,6 +182,7 @@ function getMermaidBody(flowMap :FlowMap): Promise<string> {
                 case 'actionCalls':
                 case 'assignments':
                 case 'collectionProcessors':
+                case 'customErrors':
                 case 'recordCreates':
                 case 'recordLookups':
                 case 'recordUpdates':
@@ -243,6 +244,7 @@ function getNodeDefStr(flowMap: FlowMap): Promise<string> {
                     (<any>NODE_CONFIG)[type].label[flowMap[property].elementSubtype] : 
                     (<any>NODE_CONFIG)[type].label;
                 case 'assignments':
+                case 'customErrors':
                 case 'decisions':
                 case 'loops':
                 case 'recordCreates':

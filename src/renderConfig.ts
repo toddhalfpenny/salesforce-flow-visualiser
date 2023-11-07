@@ -42,6 +42,15 @@ export const NODE_CONFIG = {
 		mermaidClose: ")",
 		mermaidOpen: "("
 	},
+	'customErrors': {
+		background: "#032D60",
+		color: "white",
+		label: "Custom Error",
+		icon: "<&pencil>",
+		mermaidIcon: "🚫" ,
+		mermaidClose: ")",
+		mermaidOpen: "("
+	},
 	'decisions': {
 		background: "#DD7A00",
 		color: "white",

@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>59.0</apiVersion>
-    <assignments>
-        <name>Test_Assignment</name>
-        <label>Test Assignment</label>
+    <customErrors>
+        <description>Desc</description>
+        <name>My_Custom_Error</name>
+        <label>My Custom Error</label>
         <locationX>176</locationX>
-        <locationY>539</locationY>
-        <assignmentItems>
-            <assignToReference>testVar</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>123</stringValue>
-            </value>
-        </assignmentItems>
-    </assignments>
+        <locationY>431</locationY>
+        <customErrorMessages>
+            <errorMessage>{!My_Custom_Error}{!MyCustomError}</errorMessage>
+            <fieldSelection>Account</fieldSelection>
+            <isFieldError>true</isFieldError>
+        </customErrorMessages>
+    </customErrors>
     <environments>Default</environments>
     <interviewLabel>Custom Error {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Custom Error</label>
@@ -84,11 +83,4 @@
         <isViewedAsPlainText>false</isViewedAsPlainText>
         <text>&lt;p&gt;Whoop!&lt;/p&gt;</text>
     </textTemplates>
-    <variables>
-        <name>testVar</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
 </Flow>
