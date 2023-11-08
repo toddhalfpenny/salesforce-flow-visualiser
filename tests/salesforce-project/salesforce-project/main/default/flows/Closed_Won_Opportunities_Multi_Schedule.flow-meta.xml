@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
+        <name>Fault_Email</name>
+        <label>Fault Email</label>
+        <locationX>842</locationX>
+        <locationY>384</locationY>
+        <actionName>Account.Notify_Owner_of_Account_Change</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>Account.Notify_Owner_of_Account_Change</nameSegment>
+        <versionSegment>1</versionSegment>
+    </actionCalls>
+    <actionCalls>
         <name>Mail_Account_Holder</name>
         <label>Mail Account Holder</label>
         <locationX>578</locationX>
         <locationY>276</locationY>
         <actionName>Account.Notify_Owner_of_Account_Change</actionName>
         <actionType>emailAlert</actionType>
+        <faultConnector>
+            <targetReference>Fault_Email</targetReference>
+        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>SObjectRowId</name>
@@ -14,6 +34,8 @@
                 <elementReference>$Record.AccountId</elementReference>
             </value>
         </inputParameters>
+        <nameSegment>Account.Notify_Owner_of_Account_Change</nameSegment>
+        <versionSegment>1</versionSegment>
     </actionCalls>
     <apiVersion>59.0</apiVersion>
     <environments>Default</environments>
