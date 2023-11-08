@@ -134,6 +134,7 @@ function createFlowMap(flowObj: any) :Promise<FlowMap>  {
 								label: el.label,
 								type: property,
 								nextNode: nextNode,
+				                faultPath: el.faultConnector?.targetReference,
 								nextNodeLabel: el.defaultConnectorLabel,
 								nextValueConnector : (el.nextValueConnector) ?
 									el.nextValueConnector.targetReference : null,
@@ -155,12 +156,31 @@ function createFlowMap(flowObj: any) :Promise<FlowMap>  {
     });
 }
 
+function getFlowType(flowMap: FlowMap): string {
+    if (flowMap.processType === 'Flow') {
+        return "Screen flow";
+    } else {
+        switch ( flowMap.start.triggerType ) {
+            case "Scheduled":
+                return "Scheduled flow;"
+            case "RecordAfterSave":
+                return "Record triggered flow: After Save (" + flowMap.start.object + ")";
+            case "RecordBeforeSave":
+                return "Record triggered flow: Before Save (" + flowMap.start.object + ")";
+            case "PlatformEvent":
+                return "PlatformEvent triggered flow (" + flowMap.start.object + ")";
+            default:
+                return "Autolanuched flow - No trigger";
+        }
+    }
+}
+
 /*===================================================================
  * M E R M A I D
  *=================================================================*/
 function generateMermaidContent(flowMap: FlowMap):Promise<string> {
     return new Promise(async (resolve, reject) => {
-        const title = "# "+ flowMap['label'] + "\n### " + flowMap['processType'] + " (*" + flowMap['status'] + "*)\n";
+        const title = "# "+ flowMap['label'] + "\n### " + getFlowType(flowMap) + "\n*" + flowMap['status'] + "*\n";
         const variables = await getVariablesMd(flowMap.variables) + "\n";
         const mdStart = "## Flow\n```mermaid\nflowchart TB\n";
         const nodeDefStr = await getNodeDefStr(flowMap) + "\n\n";
@@ -178,6 +198,7 @@ function getMermaidBody(flowMap :FlowMap): Promise<string> {
             const node = flowMap[property];
             const type = node.type;
             const nextNode = (node.nextNode) ? node.nextNode : "END"
+            const faultNode = (node.faultPath) ? node.faultPath : "END"
             switch (type) {
                 case 'actionCalls':
                 case 'assignments':
@@ -188,6 +209,9 @@ function getMermaidBody(flowMap :FlowMap): Promise<string> {
                 case 'recordUpdates':
                 case 'screens':
                     bodyStr += node.name + " --> " + nextNode + "\n";
+                    if (node.faultPath) {
+                        bodyStr += node.name + " -. Fault .->" + faultNode + "\n"; 
+                    }
                     break;
                 case 'start':
                     const defaultPathLabel = (node.scheduledPaths.length > 0) ? "|Run Immediately|" : "";
