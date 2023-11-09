@@ -19,7 +19,7 @@
     </actionCalls>
     <actionCalls>
         <name>Mail_Account_Holder</name>
-        <label>Mail Account Holder</label>
+        <label>Mail Account Holder ( end ) [for me]</label>
         <locationX>578</locationX>
         <locationY>276</locationY>
         <actionName>Account.Notify_Owner_of_Account_Change</actionName>

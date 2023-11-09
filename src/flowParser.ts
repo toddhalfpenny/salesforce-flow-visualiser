@@ -276,7 +276,7 @@ function getNodeDefStr(flowMap: FlowMap): Promise<string> {
                 case 'recordUpdates':
                 case 'screens':
                 case 'subflows':
-                nodeDefStr += property + (<any>NODE_CONFIG)[type].mermaidOpen + icon + " <em>" + label +"</em>\n" + flowMap[property].label + (<any>NODE_CONFIG)[type].mermaidClose + ":::" + type + "\n"
+                nodeDefStr += property + (<any>NODE_CONFIG)[type].mermaidOpen + '"' + icon + " <em>" + label +"</em><br/>" + flowMap[property].label + '"' + (<any>NODE_CONFIG)[type].mermaidClose + ':::' + type + "\n"
                     break;
                 default:
                     // do nothing
