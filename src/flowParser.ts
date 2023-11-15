@@ -122,7 +122,7 @@ function createFlowMap(flowObj: any) :Promise<FlowMap>  {
 								});
 								break;	
 							case 'loops':
-								nextNode = (el.connector) ? el.connector.targetReference : "END";
+								nextNode = (el.noMoreValuesConnector) ? el.noMoreValuesConnector.targetReference : "END";
 								break;					
 							default:
 								if (el.connector) {
