@@ -1,7 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>59.0</apiVersion>
+    <constants>
+        <name>Daysinayear</name>
+        <dataType>Number</dataType>
+        <value>
+            <numberValue>365.25</numberValue>
+        </value>
+    </constants>
+    <customErrors>
+        <name>My_Custom_Error</name>
+        <label>My Custom Error</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <customErrorMessages>
+            <errorMessage>{!My_Custom_Error}{!MyCustomError}</errorMessage>
+            <fieldSelection>Account</fieldSelection>
+            <isFieldError>true</isFieldError>
+        </customErrorMessages>
+    </customErrors>
     <environments>Default</environments>
+    <formulas>
+        <name>ShirtforceBirthdayStilltoCome</name>
+        <dataType>Boolean</dataType>
+        <expression>if(DAYOFYEAR(today()) &lt; 305, true, false)</expression>
+    </formulas>
     <interviewLabel>Case Priority is High. {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Case Priority is High.</label>
     <processMetadataValues>
