@@ -55,7 +55,7 @@ export function parseFlow(xml:string, renderAs: "plantuml" | "mermaid" = "mermai
                 case 'mermaid': 
                     resolve({
                         flowMap: flowMap,
-                        uml: await generateMermaidContent(flowMap)
+                        uml: await generateMermaidContent(flowMap, options)
                     });
                     break;
                 case 'plantuml':
@@ -84,16 +84,19 @@ function createFlowMap(flowObj: any) :Promise<FlowMap>  {
 	let flowMap:FlowMap = {};
 	for (const property in flowObj) {
 		switch (property) {
+			case 'constants' :
 			case 'description' :
+            case 'formulas' :
 			case 'label' :
 			case 'processType' :
 			case 'status' :
+            case 'textTemplates' :
 				flowMap[property] = flowObj[property];
 				break;
 			case 'start' :
 				flowMap[property] = flowObj[property];
 				flowMap[property].type = property;
-				flowMap[property].nextNode = flowObj[property].connector.targetReference;
+				flowMap[property].nextNode = flowObj[property].connector?.targetReference;
                 flowMap[property].scheduledPaths = (!flowMap[property].scheduledPaths) ? [] : (flowMap[property].scheduledPaths.length) ? flowMap[property].scheduledPaths : [flowMap[property].scheduledPaths];
 				break;
 			default :
@@ -178,16 +181,22 @@ function getFlowType(flowMap: FlowMap): string {
 /*===================================================================
  * M E R M A I D
  *=================================================================*/
-function generateMermaidContent(flowMap: FlowMap):Promise<string> {
+function generateMermaidContent(flowMap: FlowMap, options: any):Promise<string> {
+    console.log("options", options)
     return new Promise(async (resolve, reject) => {
         const title = "# "+ flowMap['label'] + "\n### " + getFlowType(flowMap) + "\n*" + flowMap['status'] + "*\n";
         const variables = await getVariablesMd(flowMap.variables) + "\n";
-        const mdStart = "## Flow\n```mermaid\nflowchart TB\n";
+        const mdStart = "## Flow\n```mermaid\n";
         const nodeDefStr = await getNodeDefStr(flowMap) + "\n\n";
         const mdClasses = await getMermaidClasses() + "\n\n";
         const mdBody = await getMermaidBody(flowMap) + "\n\n";
         const mdEnd = "```\n";
-        resolve(title + variables + mdStart + nodeDefStr + mdBody + mdClasses + mdEnd);
+        const mdDiagram = "flowchart TB\n" + nodeDefStr + mdBody + mdClasses
+        if ( options.wrapInMarkdown === false) {
+            resolve(mdDiagram);
+        } else {
+            resolve(title + variables + mdStart + mdDiagram + mdEnd);
+        }
     });
 }
 
@@ -214,12 +223,18 @@ function getMermaidBody(flowMap :FlowMap): Promise<string> {
                     }
                     break;
                 case 'start':
-                    const defaultPathLabel = (node.scheduledPaths.length > 0) ? "|Run Immediately|" : "";
-                    bodyStr += "START(( START )) --> " + defaultPathLabel + nextNode  + "\n";
+                    if (nextNode !== "END") {
+                        // 'start' may not have a default path 
+                        const defaultPathLabel = (node.scheduledPaths.length > 0) ? "|Run Immediately|" : "";
+                        bodyStr += "START(( START )) --> " + defaultPathLabel + nextNode  + "\n";
+                    }
                     // scheduled paths
                     for (const path of node.scheduledPaths ) {
+                        path.label = (path.label) ? path.label : 'Run Immediately';
                         bodyStr += "START(( START )) --> |" + path.label + "| " + path.connector.targetReference + "\n";
+                        // bodyStr += "START(( START )) --> |" + (path.label) ?  path.label : 'Run Immediately' + "| " + path.connector.targetReference + "\n";
                     }
+                    
                     break;
                 case 'decisions':
                     // rules
