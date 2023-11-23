@@ -76,6 +76,15 @@ export const NODE_CONFIG = {
 		mermaidClose: ")",
 		mermaidOpen: "("
 	},
+	'recordDeletes': {
+		background: "#F9548A",
+		color: "white",
+		label: "Delete Records",
+		icon: "<&medical-cross>",
+		mermaidIcon: "-" ,
+		mermaidClose: ")",
+		mermaidOpen: "("
+	},
 	'recordLookups': {
 		background: "#F9548A",
 		color: "white",
