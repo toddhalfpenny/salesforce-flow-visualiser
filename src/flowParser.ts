@@ -214,6 +214,7 @@ function getMermaidBody(flowMap :FlowMap): Promise<string> {
                 case 'collectionProcessors':
                 case 'customErrors':
                 case 'recordCreates':
+                case 'recordDeletes':
                 case 'recordLookups':
                 case 'recordUpdates':
                 case 'screens':
@@ -287,6 +288,7 @@ function getNodeDefStr(flowMap: FlowMap): Promise<string> {
                 case 'decisions':
                 case 'loops':
                 case 'recordCreates':
+                case 'recordDeletes':
                 case 'recordLookups':
                 case 'recordUpdates':
                 case 'screens':
