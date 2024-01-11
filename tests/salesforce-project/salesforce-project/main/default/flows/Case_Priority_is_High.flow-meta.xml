@@ -25,6 +25,18 @@
         <dataType>Boolean</dataType>
         <expression>if(DAYOFYEAR(today()) &lt; 305, true, false)</expression>
     </formulas>
+    <formulas>
+        <name>TableRow</name>
+        <dataType>String</dataType>
+        <expression>&apos;&lt;tr border=&quot;1&quot; style=&quot;border-collapse:collapse&quot;&gt;&apos;+
+&apos;&lt;td&gt;&apos;+{!Loop_Users.Id}+&apos;&lt;/td&gt;&apos;+
+&apos;&lt;td&gt;&apos;+{!Loop_Users.Name}+&apos;&lt;/td&gt;&apos;+
+&apos;&lt;td&gt;&apos;+{!Loop_Users.Username}+&apos;&lt;/td&gt;&apos;+
+&apos;&lt;td&gt;&apos;+TEXT({!Loop_Users.CreatedDate})+&apos;&lt;/td&gt;&apos;+
+&apos;&lt;td&gt;&apos;+TEXT({!Loop_Users.LastLoginDate})+&apos;&lt;/td&gt;&apos;+
+&apos;&lt;td&gt;&apos;+IF({!Loop_Users.IsActive},&apos;Active&apos;,&apos;Deactivated&apos;)+&apos;&lt;/td&gt;&apos;+
+&apos;&lt;/tr&gt;&apos;</expression>
+    </formulas>>
     <interviewLabel>Case Priority is High. {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Case Priority is High.</label>
     <processMetadataValues>
@@ -92,6 +104,6 @@
         <description>Whoop!</description>
         <name>MyCustomError</name>
         <isViewedAsPlainText>false</isViewedAsPlainText>
-        <text>&lt;p&gt;Whoop!&lt;/p&gt;</text>
+        <text>&lt;p&gt;&quot;Whoop!&lt;/p&gt;</text>
     </textTemplates>
 </Flow>
