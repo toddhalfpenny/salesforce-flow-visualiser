@@ -66,7 +66,6 @@ export function parseFlow(
       const parser = new XMLParser();
       const flowObj = parser.parse(xml).Flow;
       const flowMap = await createFlowMap(flowObj);
-      // console.log("flowMap", flowMap);
       if (Object.keys(flowMap).length === 0) {
         reject("no-renderable-content-found");
       }
@@ -304,7 +303,6 @@ function getMermaidBody(flowMap: FlowMap): Promise<string> {
               "| " +
               path.connector.targetReference +
               "\n";
-            // bodyStr += "START(( START )) --> |" + (path.label) ?  path.label : 'Run Immediately' + "| " + path.connector.targetReference + "\n";
           }
 
           break;
