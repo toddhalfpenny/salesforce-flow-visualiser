@@ -162,7 +162,12 @@ function createFlowMap(flowObj: any) :Promise<FlowMap>  {
 function getFlowType(flowMap: FlowMap): string {
     if (flowMap.processType === 'Flow') {
         return "Screen flow";
-    } else {
+    } 
+    // Avoid crash if flowMap.start is not set
+    else if (!flowMap.start){
+        return `Unknown (processType: ${flowMap.processType})`;
+    }
+    else {
         switch ( flowMap.start.triggerType ) {
             case "Scheduled":
                 return "Scheduled flow;"
@@ -240,7 +245,7 @@ function getMermaidBody(flowMap :FlowMap): Promise<string> {
                 case 'decisions':
                     // rules
                     for (const rule of node.rules ) {
-                        bodyStr += node.name + " --> |" + rule.label + "| " + rule.nextNode.targetReference + "\n";
+                        bodyStr += node.name + " --> |" + rule.label + "| " + (rule.nextNode?.targetReference || "Unknown (no targetReference") + "\n";
                     }
                     
                     // default
